@@ -3,21 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request): Response
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
+        return Inertia::render('Profile/Edit', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => session('status'),
         ]);
     }
 
@@ -34,7 +38,33 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit');
+    }
+
+    public function updatePhoto(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ], [
+            'photo.required' => 'Foto profil wajib dipilih.',
+            'photo.image' => 'File harus berupa gambar.',
+            'photo.mimes' => 'Foto profil harus berupa JPG, PNG, atau WEBP.',
+            'photo.max' => 'Ukuran foto profil maksimal 2 MB.',
+        ]);
+
+        $user = $request->user();
+        $oldPhotoPath = $user->profile_photo_path;
+        $newPhotoPath = $validated['photo']->store('profile-photos', 'public');
+
+        $user->forceFill([
+            'profile_photo_path' => $newPhotoPath,
+        ])->save();
+
+        if ($oldPhotoPath && $oldPhotoPath !== $newPhotoPath) {
+            Storage::disk('public')->delete($oldPhotoPath);
+        }
+
+        return Redirect::route('profile.edit')->with('success', 'Foto profil berhasil diperbarui.');
     }
 
     /**
@@ -42,7 +72,7 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
+        $request->validate([
             'password' => ['required', 'current_password'],
         ]);
 
