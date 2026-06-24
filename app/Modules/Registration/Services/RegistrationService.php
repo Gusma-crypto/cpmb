@@ -16,11 +16,7 @@ class RegistrationService
 {
     public const REQUIRED_DOCUMENTS = ['ijazah', 'ktp', 'photo'];
 
-    public const PAYMENT_DOCUMENT = 'payment_proof';
-
     public const REGISTRATION_STATUSES = ['draft', 'submitted', 'under_review', 'revision_required', 'verified', 'rejected', 'exam_ready'];
-
-    public const PAYMENT_STATUSES = ['unpaid', 'pending', 'paid', 'failed'];
 
     public function paginateFor(User $user, array $filters = []): LengthAwarePaginator
     {
@@ -41,12 +37,9 @@ class RegistrationService
     {
         $search = trim((string) ($input['search'] ?? ''));
         $status = (string) ($input['status'] ?? '');
-        $paymentStatus = (string) ($input['payment_status'] ?? '');
-
         return [
             'search' => $search,
             'status' => in_array($status, self::REGISTRATION_STATUSES, true) ? $status : '',
-            'payment_status' => in_array($paymentStatus, self::PAYMENT_STATUSES, true) ? $paymentStatus : '',
         ];
     }
 
@@ -91,8 +84,7 @@ class RegistrationService
                         });
                 });
             })
-            ->when($filters['status'] !== '', fn (Builder $query) => $query->where('status', $filters['status']))
-            ->when($filters['payment_status'] !== '', fn (Builder $query) => $query->where('payment_status', $filters['payment_status']));
+            ->when($filters['status'] !== '', fn (Builder $query) => $query->where('status', $filters['status']));
 
         return $query;
     }
@@ -127,7 +119,6 @@ class RegistrationService
                 'wave'                => $wave->wave_number,
                 'registration_number' => $this->generateRegistrationNumber(),
                 'status'              => 'draft',
-                'payment_status'      => 'unpaid',
             ]);
         });
     }
@@ -166,7 +157,7 @@ class RegistrationService
         $this->assertRequiredDocumentsApproved($registration);
 
         $registration->update([
-            'status'      => 'verified',
+            'status'      => 'exam_ready',
             'revision_notes' => null,
             'verified_at' => now(),
         ]);

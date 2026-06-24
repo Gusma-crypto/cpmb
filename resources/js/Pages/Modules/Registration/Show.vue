@@ -16,10 +16,6 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    paymentDocument: {
-        type: String,
-        default: '',
-    },
     submitCaptcha: {
         type: String,
         default: null,
@@ -69,7 +65,7 @@ const adminStatusInfo = computed(() => {
         verified: {
             label: 'Data sudah terverifikasi',
             badge: 'Terverifikasi',
-            description: 'Pendaftaran Anda sudah diverifikasi. Silakan lanjutkan pembayaran.',
+            description: 'Pendaftaran Anda sudah diverifikasi. Anda bisa lanjut ke tahap seleksi CBT saat jadwal ujian aktif.',
             className: 'border-green-200 bg-green-50 text-green-800',
             buttonClass: 'bg-green-600 text-white',
         },
@@ -83,7 +79,7 @@ const adminStatusInfo = computed(() => {
         exam_ready: {
             label: 'Siap ujian',
             badge: 'Exam Ready',
-            description: 'Pendaftaran dan pembayaran sudah valid. Silakan pantau jadwal, ruang, dan kartu ujian.',
+            description: 'Pendaftaran sudah valid. Silakan pantau jadwal, ruang, kartu ujian, dan seleksi CBT.',
             className: 'border-blue-200 bg-blue-50 text-blue-800',
             buttonClass: 'bg-blue-600 text-white',
         },
@@ -92,11 +88,6 @@ const adminStatusInfo = computed(() => {
     return statuses[props.registration.status] || null;
 });
 const uploadedDocumentTypes = computed(() => props.registration.documents.map((document) => document.type));
-const paymentVerification = computed(() => props.registration.payment_verification || null);
-const canUploadPayment = computed(() => !props.canManageAll
-    && props.registration.status === 'verified'
-    && props.registration.payment_status !== 'paid'
-    && paymentVerification.value?.status !== 'pending');
 const canVerifyRegistration = computed(() => props.canManageAll && ['submitted', 'under_review'].includes(props.registration.status));
 const canStartReview = computed(() => props.canManageAll && props.registration.status === 'submitted');
 const canRequestRevision = computed(() => props.canManageAll && ['submitted', 'under_review'].includes(props.registration.status));
@@ -135,7 +126,6 @@ const registrationRows = computed(() => [
     ['Email', props.registration.user?.email],
     ['No. HP/WA', props.registration.user?.phone],
     ['Status Pendaftaran', statusLabel(props.registration.status)],
-    ['Status Pembayaran', props.registration.payment_status || 'unpaid'],
     ['Gelombang', props.registration.wave],
     ['Dibuat', formatDateTime(props.registration.created_at)],
 ]);
@@ -237,42 +227,6 @@ function submitRegistration() {
                 </section>
 
                 <section class="bg-white p-6 shadow-sm sm:rounded-lg">
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-900">Pembayaran</h2>
-                            <p class="mt-1 text-sm text-gray-600">
-                                Status pembayaran: {{ registration.payment_status || 'unpaid' }}.
-                            </p>
-                            <p v-if="paymentVerification" class="mt-2 text-sm text-gray-600">
-                                Bukti terakhir: {{ paymentVerification.status }} · {{ paymentVerification.bank_name }} ·
-                                Rp {{ Number(paymentVerification.transfer_amount || 0).toLocaleString('id-ID') }}.
-                            </p>
-                            <p v-if="paymentVerification?.notes" class="mt-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-                                Catatan admin: {{ paymentVerification.notes }}
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <Link
-                                v-if="!canManageAll"
-                                :href="route('student.payments.index')"
-                                class="inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold text-white transition"
-                                :class="canUploadPayment ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-900 hover:bg-gray-800'"
-                            >
-                                {{ canUploadPayment ? 'Upload Bukti Bayar' : 'Lihat Pembayaran' }}
-                            </Link>
-                            <a
-                                v-if="paymentVerification?.proof_document"
-                                :href="route('documents.view', paymentVerification.proof_document.id)"
-                                target="_blank"
-                                class="inline-flex items-center rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-200"
-                            >
-                                Lihat Bukti
-                            </a>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="bg-white p-6 shadow-sm sm:rounded-lg">
                     <div class="flex items-center justify-between gap-3">
                         <h2 class="text-lg font-semibold text-gray-900">Detail Biodata</h2>
                         <Link
@@ -300,7 +254,6 @@ function submitRegistration() {
                     <h2 class="text-lg font-semibold text-gray-900">Detail Dokumen</h2>
                     <p class="mt-1 text-sm text-gray-600">
                         Dokumen wajib: {{ requiredDocs.join(', ') || '-' }}.
-                        Bukti pembayaran: {{ paymentDocument || '-' }}.
                     </p>
 
                     <div class="mt-4 overflow-x-auto">

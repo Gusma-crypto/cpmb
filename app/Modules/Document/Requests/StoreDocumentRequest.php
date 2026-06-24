@@ -24,7 +24,7 @@ class StoreDocumentRequest extends FormRequest
                 'integer',
                 'exists:registrations,id',
             ],
-            'type' => ['required', Rule::in(['ijazah', 'ktp', 'photo', 'skhun', 'payment_proof', 'etc'])],
+            'type' => ['required', Rule::in(['ijazah', 'ktp', 'photo', 'skhun', 'etc'])],
             'file' => [
                 'required',
                 'file',

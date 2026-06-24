@@ -36,7 +36,6 @@ const menuItems = computed(() => {
         return [
             { label: 'Dashboard', routeName: 'admin.dashboard', current: 'admin.dashboard', icon: 'dashboard' },
             { label: 'Pendaftaran', routeName: 'admin.registrations.index', current: 'admin.registrations.*', icon: 'list' },
-            { label: 'Pembayaran', routeName: 'admin.payments.index', current: 'admin.payments.*', icon: 'document' },
             { label: 'Jadwal Ujian', routeName: 'admin.exam-schedules.index', current: 'admin.exam-schedules.*', icon: 'calendar' },
             { label: 'Ruang Ujian', routeName: 'admin.exam-rooms.index', current: 'admin.exam-rooms.*', icon: 'layers' },
             { label: 'Penempatan Peserta', routeName: 'admin.exam-room-assignments.index', current: 'admin.exam-room-assignments.*', icon: 'list' },
@@ -174,10 +173,8 @@ const searchAliases = {
     'dosen.dashboard': ['home', 'beranda'],
     'student.dashboard': ['home', 'beranda'],
     'admin.registrations.index': ['registration', 'registrasi', 'pendaftaran', 'daftar', 'pmb'],
-    'admin.payments.index': ['pembayaran', 'payment', 'bukti bayar', 'verifikasi pembayaran'],
     'staff.registrations.index': ['registration', 'registrasi', 'pendaftaran', 'daftar', 'pmb'],
     'student.registrations.index': ['registration', 'registrasi', 'pendaftaran', 'daftar', 'pmb'],
-    'student.payments.index': ['pembayaran', 'payment', 'bukti bayar'],
     'admin.academic-years.index': ['academic', 'akademik', 'tahun academic', 'tahun akademik', 'tahun ajaran'],
     'admin.programs.index': ['program', 'prodi', 'program studi', 'jurusan'],
     'admin.registration-waves.index': ['gelombang', 'gel pendaftaran', 'wave'],

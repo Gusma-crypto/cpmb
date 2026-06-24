@@ -87,10 +87,6 @@ class CbtAttemptService
             throw ValidationException::withMessages(['registration' => 'Pendaftaran harus berstatus siap ujian sebelum mengikuti CBT.']);
         }
 
-        if ($registration->payment_status !== 'paid') {
-            throw ValidationException::withMessages(['payment' => 'Pembayaran harus berstatus paid sebelum mengikuti CBT.']);
-        }
-
         if ($schedule->status !== 'active') {
             throw ValidationException::withMessages(['schedule' => 'Jadwal ujian belum aktif.']);
         }

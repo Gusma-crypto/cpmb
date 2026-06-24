@@ -18,7 +18,6 @@ class DocumentService
         'ktp' => 'KTP',
         'photo' => 'Pasphoto 3x4 Background Merah',
         'skhun' => 'SKHUN',
-        'payment_proof' => 'Bukti Pembayaran',
         'etc' => 'Lainnya',
     ];
 
@@ -41,15 +40,9 @@ class DocumentService
 
         $this->assertRegistrationWaveIsOpen($user);
 
-        if (! $this->canManageAll($user) && ! in_array($registration->status, ['draft', 'revision_required'], true) && $data['type'] !== 'payment_proof') {
+        if (! $this->canManageAll($user) && ! in_array($registration->status, ['draft', 'revision_required'], true)) {
             throw ValidationException::withMessages([
                 'type' => 'Dokumen inti hanya dapat diunggah saat pendaftaran draft atau perlu revisi.',
-            ]);
-        }
-
-        if (! $this->canManageAll($user) && $data['type'] === 'payment_proof') {
-            throw ValidationException::withMessages([
-                'type' => 'Bukti pembayaran harus diunggah melalui menu Pembayaran.',
             ]);
         }
 
@@ -159,11 +152,6 @@ class DocumentService
     {
         abort_unless($this->canManageAll($user), 403);
 
-        if ($document->type === 'payment_proof') {
-            throw ValidationException::withMessages([
-                'document' => 'Bukti pembayaran harus direview melalui menu Pembayaran.',
-            ]);
-        }
     }
 
     private function resolveRegistration(User $user, array $data): Registration

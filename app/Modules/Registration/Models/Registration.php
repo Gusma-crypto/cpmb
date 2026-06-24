@@ -8,7 +8,6 @@ use App\Modules\Biodata\Models\StudentBiodata;
 use App\Modules\CbtAttempt\Models\CbtAttempt;
 use App\Modules\CbtAttempt\Models\CbtResult;
 use App\Modules\Document\Models\Document;
-use App\Modules\Payment\Models\PaymentVerification;
 use App\Modules\Program\Models\Program;
 use App\Modules\RegistrationWave\Models\RegistrationWave;
 use Illuminate\Database\Eloquent\Model;
@@ -26,8 +25,6 @@ class Registration extends Model
         'status',
         'wave',
         'program_id',
-        'payment_status',
-        'payment_ref',
         'revision_notes',
         'submitted_at',
         'verified_at',
@@ -69,11 +66,6 @@ class Registration extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(Document::class);
-    }
-
-    public function paymentVerification(): HasOne
-    {
-        return $this->hasOne(PaymentVerification::class);
     }
 
     public function cbtAttempts(): HasMany

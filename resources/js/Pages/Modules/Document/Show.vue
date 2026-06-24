@@ -23,7 +23,7 @@ const isPdf = computed(() => props.document.mime_type === 'application/pdf');
 const roles = computed(() => page.props.auth?.roles || []);
 const canManageAll = computed(() => roles.value.some((role) => ['admin', 'staff', 'superadmin'].includes(role)));
 const canDelete = computed(() => canManageAll.value || ['draft', 'revision_required'].includes(props.document.registration?.status));
-const canReview = computed(() => canManageAll.value && props.document.type !== 'payment_proof');
+const canReview = computed(() => canManageAll.value);
 const returnRegistrationId = computed(() => new URLSearchParams(page.url.split('?')[1] || '').get('registration'));
 const backHref = computed(() => returnRegistrationId.value
     ? route('registrations.show', returnRegistrationId.value)

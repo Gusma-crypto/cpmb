@@ -125,7 +125,6 @@ class RegistrationExportService
             'No HP',
             'Program Studi',
             'Status Pendaftaran',
-            'Status Pembayaran',
             'Tanggal Daftar',
         ];
     }
@@ -139,7 +138,6 @@ class RegistrationExportService
             $registration->user?->phone ?? '-',
             $registration->program?->name ?? '-',
             $registration->status,
-            $registration->payment_status ?? 'unpaid',
             optional($registration->created_at)->format('d/m/Y H:i') ?? '-',
         ];
     }
@@ -158,7 +156,7 @@ class RegistrationExportService
         $x = 35;
         $y = 485;
         $rowHeight = 22;
-        $columnWidths = [86, 100, 135, 80, 125, 80, 80, 86];
+        $columnWidths = [92, 120, 145, 85, 145, 95, 100];
         $tableWidth = array_sum($columnWidths);
         $headings = $this->headings();
 

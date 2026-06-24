@@ -39,11 +39,6 @@ const navItems = [
         current: 'student.documents.*',
     },
     {
-        label: 'Pembayaran',
-        routeName: 'student.payments.index',
-        current: 'student.payments.*',
-    },
-    {
         label: 'Kartu Ujian',
         routeName: 'student.exam-card.index',
         current: 'student.exam-card.*',

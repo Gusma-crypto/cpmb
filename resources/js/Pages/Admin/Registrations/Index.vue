@@ -13,14 +13,9 @@ const props = defineProps({
         default: () => ({
             search: '',
             status: '',
-            payment_status: '',
         }),
     },
     statusOptions: {
-        type: Array,
-        default: () => [],
-    },
-    paymentStatusOptions: {
         type: Array,
         default: () => [],
     },
@@ -37,7 +32,6 @@ const props = defineProps({
 const form = reactive({
     search: props.filters.search || '',
     status: props.filters.status || '',
-    payment_status: props.filters.payment_status || '',
 });
 
 const r = (name, params = {}) => route(`${props.routePrefix}.registrations.${name}`, params);
@@ -74,14 +68,7 @@ const statusLabel = (value) => ({
     exam_ready: 'Exam Ready',
 }[value] || value);
 
-const paymentLabel = (value) => ({
-    unpaid: 'Unpaid',
-    pending: 'Pending',
-    paid: 'Paid',
-    failed: 'Failed',
-}[value] || value || 'unpaid');
-
-const badgeClass = (value, type = 'status') => {
+const badgeClass = (value) => {
     const map = {
         draft: 'bg-gray-100 text-gray-700',
         submitted: 'bg-blue-100 text-blue-700',
@@ -90,13 +77,9 @@ const badgeClass = (value, type = 'status') => {
         verified: 'bg-emerald-100 text-emerald-700',
         rejected: 'bg-red-100 text-red-700',
         exam_ready: 'bg-green-100 text-green-700',
-        paid: 'bg-green-100 text-green-700',
-        pending: 'bg-yellow-100 text-yellow-700',
-        unpaid: 'bg-gray-100 text-gray-700',
-        failed: 'bg-red-100 text-red-700',
     };
 
-    return map[value || (type === 'payment' ? 'unpaid' : 'draft')] || map.draft;
+    return map[value || 'draft'] || map.draft;
 };
 </script>
 
@@ -136,16 +119,6 @@ const badgeClass = (value, type = 'status') => {
                             </select>
                         </div>
 
-                        <div class="w-40">
-                            <label for="payment_status" class="sr-only">Pembayaran</label>
-                            <select id="payment_status" v-model="form.payment_status" class="block h-10 w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="">Pembayaran</option>
-                                <option v-for="status in paymentStatusOptions" :key="status" :value="status">
-                                    {{ paymentLabel(status) }}
-                                </option>
-                            </select>
-                        </div>
-
                         <div class="flex shrink-0 gap-2">
                             <button type="submit" class="h-10 rounded-md bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700">
                                 Filter
@@ -181,7 +154,6 @@ const badgeClass = (value, type = 'status') => {
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Nama</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Program Studi</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Pembayaran</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Didaftarkan</th>
                                     <th class="px-6 py-3 text-right text-xs font-medium uppercase text-gray-500">Aksi</th>
                                 </tr>
@@ -203,11 +175,6 @@ const badgeClass = (value, type = 'status') => {
                                             {{ statusLabel(registration.status) }}
                                         </span>
                                     </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm">
-                                        <span class="rounded-full px-2 py-1 text-xs font-medium" :class="badgeClass(registration.payment_status, 'payment')">
-                                            {{ registration.payment_status || 'unpaid' }}
-                                        </span>
-                                    </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                                         {{ new Date(registration.created_at).toLocaleDateString('id-ID') }}
                                     </td>
@@ -218,7 +185,7 @@ const badgeClass = (value, type = 'status') => {
                                     </td>
                                 </tr>
                                 <tr v-if="registrations.data.length === 0">
-                                    <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">
+                                    <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">
                                         Tidak ada data pendaftaran yang sesuai filter.
                                     </td>
                                 </tr>

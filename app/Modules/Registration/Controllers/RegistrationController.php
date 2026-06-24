@@ -40,7 +40,6 @@ class RegistrationController extends Controller
                 'registrations' => $this->service->paginateFor($request->user(), $filters),
                 'filters' => $filters,
                 'statusOptions' => RegistrationService::REGISTRATION_STATUSES,
-                'paymentStatusOptions' => RegistrationService::PAYMENT_STATUSES,
                 'canExport' => $this->service->canExport($request->user()),
                 'routePrefix' => $routePrefix,
             ]);
@@ -117,12 +116,10 @@ class RegistrationController extends Controller
                 'user',
                 'biodata',
                 'documents',
-                'paymentVerification.proofDocument',
                 'cbtResults.cbtExam',
             ]),
             'canManageAll'    => $this->service->canManageAll($request->user()),
             'requiredDocs'    => RegistrationService::REQUIRED_DOCUMENTS,
-            'paymentDocument' => RegistrationService::PAYMENT_DOCUMENT,
             'submitCaptcha'   => $submitCaptcha,
             'hasExamCard'     => ExamCard::query()->where('registration_id', $registration->id)->exists(),
         ]);

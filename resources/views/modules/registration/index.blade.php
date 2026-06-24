@@ -28,7 +28,6 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Nama</th>
                                 @endif
                                 <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Pembayaran</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Didaftarkan</th>
                                 <th class="px-6 py-3 text-right text-xs font-medium uppercase text-gray-500">Aksi</th>
                             </tr>
@@ -43,11 +42,6 @@
                                         'accepted'  => 'bg-green-100 text-green-700',
                                         'rejected'  => 'bg-red-100 text-red-700',
                                         default     => 'bg-gray-100 text-gray-700',
-                                    };
-                                    $payColor = match ($reg->payment_status) {
-                                        'paid'    => 'bg-green-100 text-green-700',
-                                        'pending' => 'bg-yellow-100 text-yellow-700',
-                                        default   => 'bg-gray-100 text-gray-700',
                                     };
                                 @endphp
                                 <tr>
@@ -64,11 +58,6 @@
                                             {{ ucfirst($reg->status) }}
                                         </span>
                                     </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm">
-                                        <span class="rounded-full px-2 py-1 text-xs font-medium {{ $payColor }}">
-                                            {{ ucfirst($reg->payment_status ?? 'unpaid') }}
-                                        </span>
-                                    </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                                         {{ $reg->created_at->format('d/m/Y') }}
                                     </td>
@@ -78,7 +67,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ $canManageAll ? 6 : 5 }}" class="px-6 py-8 text-center text-sm text-gray-500">
+                                    <td colspan="{{ $canManageAll ? 5 : 4 }}" class="px-6 py-8 text-center text-sm text-gray-500">
                                         Belum ada data pendaftaran.
                                     </td>
                                 </tr>

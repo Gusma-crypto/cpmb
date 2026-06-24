@@ -121,7 +121,6 @@ class CbtAttemptFlowTest extends TestCase
             'registration_number' => 'REG-' . Str::random(8),
             'status' => $overrides['registration_status'] ?? 'exam_ready',
             'program_id' => $program->id,
-            'payment_status' => 'paid',
             'verified_at' => now(),
         ]);
 

@@ -35,9 +35,7 @@ class DocumentController extends Controller
     {
         return Inertia::render('Modules/Document/Create', [
             'registrations' => $this->service->availableRegistrationsFor($request->user()),
-            'types' => $this->service->canManageAll($request->user())
-                ? DocumentService::TYPES
-                : array_diff_key(DocumentService::TYPES, ['payment_proof' => true]),
+            'types' => DocumentService::TYPES,
             'canManageAll' => $this->service->canManageAll($request->user()),
             'registrationOpen' => $this->service->canManageAll($request->user()) || $this->registrationWaveIsOpen(),
         ]);

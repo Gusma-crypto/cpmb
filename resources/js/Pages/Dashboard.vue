@@ -49,18 +49,6 @@ const statusClass = {
     exam_ready: 'badge-green',
 };
 
-const paymentLabel = {
-    unpaid: 'Belum Bayar',
-    pending: 'Menunggu Konfirmasi',
-    paid: 'Lunas',
-};
-
-const paymentClass = {
-    unpaid: 'badge-red',
-    pending: 'badge-yellow',
-    paid: 'badge-green',
-};
-
 const nextStepText = computed(() => {
     if (! props.registration) return 'Mulai pendaftaran Anda sekarang.';
     switch (props.registration.status) {
@@ -68,8 +56,8 @@ const nextStepText = computed(() => {
         case 'submitted': return 'Pendaftaran Anda sudah dikirim dan menunggu review panitia.';
         case 'under_review': return 'Pendaftaran Anda sedang direview oleh panitia.';
         case 'revision_required': return props.registration.revision_notes || 'Pendaftaran perlu direvisi sesuai catatan panitia.';
-        case 'verified':  return 'Silakan selesaikan pembayaran untuk melanjutkan proses.';
-        case 'exam_ready':  return 'Pendaftaran dan pembayaran sudah valid. Silakan pantau jadwal ujian.';
+        case 'verified':  return 'Pendaftaran sudah diverifikasi. Anda bisa lanjut ke seleksi CBT saat jadwal aktif.';
+        case 'exam_ready':  return 'Pendaftaran sudah valid. Silakan pantau jadwal ujian dan seleksi CBT.';
         case 'rejected':  return 'Pendaftaran Anda ditolak. Hubungi panitia untuk informasi lebih lanjut.';
         default:          return '';
     }
@@ -175,12 +163,6 @@ const chartBars = computed(() => {
                                     <span class="status-desc">Status</span>
                                     <span class="badge" :class="statusClass[registration.status]">
                                         {{ statusLabel[registration.status] ?? registration.status }}
-                                    </span>
-                                </div>
-                                <div class="status-item">
-                                    <span class="status-desc">Pembayaran</span>
-                                    <span class="badge" :class="paymentClass[registration.payment_status]">
-                                        {{ paymentLabel[registration.payment_status] ?? registration.payment_status }}
                                     </span>
                                 </div>
                             </div>

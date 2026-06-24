@@ -156,7 +156,7 @@ const notification = computed(() => {
     if (isExamReady.value) {
         return {
             title: 'Siap ujian',
-            message: 'Pendaftaran dan pembayaran sudah valid. Pantau jadwal, ruang, dan kartu ujian dari menu yang tersedia.',
+            message: 'Pendaftaran sudah valid. Pantau jadwal, ruang, kartu ujian, dan seleksi CBT dari menu yang tersedia.',
             className: 'border-green-200 bg-green-50 text-green-800',
         };
     }
@@ -164,7 +164,7 @@ const notification = computed(() => {
     if (isVerified.value) {
         return {
             title: 'Pendaftaran terverifikasi',
-            message: 'Berkas sudah disetujui. Silakan lanjutkan pembayaran.',
+            message: 'Berkas sudah disetujui. Anda bisa lanjut ke tahap seleksi CBT saat jadwal ujian aktif.',
             className: 'border-green-200 bg-green-50 text-green-800',
         };
     }
@@ -316,7 +316,6 @@ const documentChecklist = computed(() => props.requiredDocs.map((type) => ({
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">No. Registrasi</th>
                                     <th v-if="canManageAll" class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Nama</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Pembayaran</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Didaftarkan</th>
                                     <th class="px-6 py-3 text-right text-xs font-medium uppercase text-gray-500">Aksi</th>
                                 </tr>
@@ -334,11 +333,6 @@ const documentChecklist = computed(() => props.requiredDocs.map((type) => ({
                                             {{ statusLabel(registration.status) }}
                                         </span>
                                     </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm">
-                                        <span class="rounded-full px-2 py-1 text-xs font-medium" :class="badgeClass(registration.payment_status, 'payment')">
-                                            {{ registration.payment_status || 'unpaid' }}
-                                        </span>
-                                    </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                                         {{ new Date(registration.created_at).toLocaleDateString('id-ID') }}
                                     </td>
@@ -349,7 +343,7 @@ const documentChecklist = computed(() => props.requiredDocs.map((type) => ({
                                     </td>
                                 </tr>
                                 <tr v-if="registrations.data.length === 0">
-                                    <td :colspan="canManageAll ? 6 : 5" class="px-6 py-8 text-center text-sm text-gray-500">
+                                    <td :colspan="canManageAll ? 5 : 4" class="px-6 py-8 text-center text-sm text-gray-500">
                                         Belum ada data pendaftaran.
                                     </td>
                                 </tr>

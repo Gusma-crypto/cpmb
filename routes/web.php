@@ -117,6 +117,4 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     Route::get('/exam-rooms', [LecturerExamRoomController::class, 'index'])->name('exam-rooms.index');
 });
 
-require app_path('Modules/Payment/routes.php');
-
 require __DIR__.'/auth.php';

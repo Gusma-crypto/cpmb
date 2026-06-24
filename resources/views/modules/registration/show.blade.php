@@ -40,11 +40,6 @@
                         'rejected'  => 'bg-red-100 text-red-700',
                         default     => 'bg-gray-100 text-gray-700',
                     };
-                    $payColor = match ($registration->payment_status) {
-                        'paid'    => 'bg-green-100 text-green-700',
-                        'pending' => 'bg-yellow-100 text-yellow-700',
-                        default   => 'bg-gray-100 text-gray-700',
-                    };
                 @endphp
 
                 <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -61,14 +56,6 @@
                         <dd class="mt-1">
                             <span class="rounded-full px-2 py-1 text-xs font-medium {{ $statusColor }}">
                                 {{ ucfirst($registration->status) }}
-                            </span>
-                        </dd>
-                    </div>
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status Pembayaran</dt>
-                        <dd class="mt-1">
-                            <span class="rounded-full px-2 py-1 text-xs font-medium {{ $payColor }}">
-                                {{ ucfirst($registration->payment_status ?? 'unpaid') }}
                             </span>
                         </dd>
                     </div>
@@ -139,100 +126,6 @@
                 </ul>
             </div>
 
-            {{-- SEKSI PEMBAYARAN (muncul setelah status verified) --}}
-            @if (in_array($registration->status, ['verified', 'accepted', 'rejected']))
-                @php $paymentDoc = $uploadedDocs->get($paymentDocument); @endphp
-                <div class="bg-white p-6 shadow-sm dark:bg-gray-800 sm:rounded-lg">
-                    <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                        Pembayaran
-                    </h3>
-
-                    <div class="flex items-center justify-between py-2">
-                        <div class="flex items-center gap-3">
-                            @if ($paymentDoc)
-                                <span class="h-2 w-2 rounded-full bg-green-500"></span>
-                            @else
-                                <span class="h-2 w-2 rounded-full bg-gray-300"></span>
-                            @endif
-                            <span class="text-sm text-gray-700 dark:text-gray-200">Bukti Pembayaran</span>
-                        </div>
-
-                        @if ($paymentDoc)
-                            @php
-                                $payDocColor = match ($paymentDoc->status) {
-                                    'approved' => 'bg-green-100 text-green-700',
-                                    'rejected' => 'bg-red-100 text-red-700',
-                                    default    => 'bg-gray-100 text-gray-600',
-                                };
-                            @endphp
-                            <div class="flex items-center gap-3">
-                                <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $payDocColor }}">
-                                    {{ ucfirst($paymentDoc->status) }}
-                                </span>
-                                <a href="{{ route('documents.show', $paymentDoc) }}" class="text-xs font-medium text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">
-                                    Lihat
-                                </a>
-
-                                {{-- Tombol verifikasi pembayaran (admin/staff) --}}
-                                @if ($canManageAll && $paymentDoc->status === 'pending')
-                                    <form method="POST" action="{{ route('payment-verifications.approve', $paymentDoc) }}">
-                                        @csrf
-                                        <button type="submit"
-                                            class="rounded bg-green-600 px-2 py-1 text-xs font-semibold text-white hover:bg-green-700"
-                                            onclick="return confirm('Setujui bukti pembayaran ini?')">
-                                            Setujui
-                                        </button>
-                                    </form>
-                                    <button type="button"
-                                        onclick="document.getElementById('reject-payment-form').classList.toggle('hidden')"
-                                        class="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-700">
-                                        Tolak
-                                    </button>
-                                @endif
-                            </div>
-                        @else
-                            @if (! $canManageAll && $registration->status === 'verified')
-                                <a href="{{ route('documents.create') }}"
-                                    class="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700">
-                                    Upload Bukti Pembayaran
-                                </a>
-                            @else
-                                <span class="text-xs text-gray-400">Belum diunggah</span>
-                            @endif
-                        @endif
-                    </div>
-
-                    {{-- Form tolak pembayaran --}}
-                    @if ($canManageAll && $paymentDoc && $paymentDoc->status === 'pending')
-                        <form id="reject-payment-form" method="POST"
-                            action="{{ route('payment-verifications.reject', $paymentDoc) }}"
-                            class="mt-4 hidden rounded-md border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-                            @csrf
-                            <label class="block text-sm font-medium text-red-800 dark:text-red-300">Alasan Penolakan</label>
-                            <textarea name="notes" rows="3" required maxlength="500"
-                                class="mt-1 block w-full rounded-md border-red-300 text-sm shadow-sm focus:border-red-500 focus:ring-red-500 dark:border-red-700 dark:bg-gray-900 dark:text-gray-200"
-                                placeholder="Tuliskan alasan penolakan...">{{ old('notes') }}</textarea>
-                            <x-input-error :messages="$errors->get('notes')" class="mt-1" />
-                            <div class="mt-3 flex gap-2">
-                                <button type="submit"
-                                    class="rounded-md bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700">
-                                    Konfirmasi Tolak
-                                </button>
-                                <button type="button"
-                                    onclick="document.getElementById('reject-payment-form').classList.add('hidden')"
-                                    class="text-xs text-gray-600 hover:text-gray-900">
-                                    Batal
-                                </button>
-                            </div>
-                        </form>
-                    @endif
-
-                    @if (! $paymentDoc && $registration->status === 'verified' && $canManageAll)
-                        <p class="mt-2 text-xs text-gray-400">Menunggu student mengunggah bukti pembayaran.</p>
-                    @endif
-                </div>
-            @endif
-
             {{-- AKSI UTAMA --}}
             <div class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
 
@@ -251,20 +144,6 @@
                         @csrf
                         <x-primary-button>Verifikasi</x-primary-button>
                     </form>
-                @endif
-
-                {{-- Admin/staff: terima (hanya jika sudah verified DAN payment paid) --}}
-                @if ($canManageAll && $registration->status === 'verified')
-                    @if ($registration->payment_status === 'paid')
-                        <form method="POST" action="{{ route('registrations.accept', $registration) }}">
-                            @csrf
-                            <x-primary-button>Terima Pendaftaran</x-primary-button>
-                        </form>
-                    @else
-                        <p class="text-sm text-yellow-700 dark:text-yellow-400">
-                            Pembayaran belum terverifikasi &mdash; pendaftaran belum dapat diterima.
-                        </p>
-                    @endif
                 @endif
 
                 {{-- Admin/staff: tolak (kecuali sudah accepted/rejected) --}}
