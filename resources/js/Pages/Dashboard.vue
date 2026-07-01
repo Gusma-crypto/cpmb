@@ -37,6 +37,7 @@ const statusLabel = {
     verified: 'Terverifikasi',
     rejected: 'Ditolak',
     exam_ready: 'Siap Ujian',
+    accepted: 'Diterima',
 };
 
 const statusClass = {
@@ -47,6 +48,7 @@ const statusClass = {
     verified: 'badge-blue',
     rejected: 'badge-red',
     exam_ready: 'badge-green',
+    accepted: 'badge-green',
 };
 
 const nextStepText = computed(() => {
@@ -58,6 +60,7 @@ const nextStepText = computed(() => {
         case 'revision_required': return props.registration.revision_notes || 'Pendaftaran perlu direvisi sesuai catatan panitia.';
         case 'verified':  return 'Pendaftaran sudah diverifikasi. Anda bisa lanjut ke seleksi CBT saat jadwal aktif.';
         case 'exam_ready':  return 'Pendaftaran sudah valid. Silakan pantau jadwal ujian dan seleksi CBT.';
+        case 'accepted':  return 'Selamat, Anda dinyatakan diterima berdasarkan hasil seleksi.';
         case 'rejected':  return 'Pendaftaran Anda ditolak. Hubungi panitia untuk informasi lebih lanjut.';
         default:          return '';
     }

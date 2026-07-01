@@ -8,6 +8,7 @@ use App\Modules\ExamRoom\Models\ParticipantExamAssignment;
 use App\Modules\ExamSchedule\Models\ExamSchedule;
 use App\Modules\Registration\Models\Registration;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -104,7 +105,11 @@ class ExamRoomAssignmentService
         return [
             'rooms' => ExamRoom::query()->where('status', 'active')->orderBy('name')->get(),
             'schedules' => ExamSchedule::query()->orderByDesc('exam_date')->get(),
-            'registrations' => Registration::query()->with('user')->latest()->get(['id', 'registration_number', 'user_id', 'status']),
+            'registrations' => Registration::query()
+                ->with('user')
+                ->where('status', 'exam_ready')
+                ->latest()
+                ->get(['id', 'registration_number', 'user_id', 'status']),
             'assignedRegistrationIds' => ParticipantExamAssignment::query()
                 ->pluck('registration_id')
                 ->values(),
@@ -132,7 +137,11 @@ class ExamRoomAssignmentService
             ->whereNotIn('registration_id', $registrationIds)
             ->delete();
 
-        $registrations = Registration::query()->whereIn('id', $registrationIds)->get(['id', 'user_id']);
+        $registrations = Registration::query()
+            ->whereIn('id', $registrationIds)
+            ->get(['id', 'user_id', 'status', 'registration_number']);
+
+        $this->assertParticipantsAreExamReady($registrations);
 
         foreach ($registrations as $registration) {
             ParticipantExamAssignment::updateOrCreate(
@@ -174,6 +183,20 @@ class ExamRoomAssignmentService
 
             throw ValidationException::withMessages([
                 'registration_ids' => "Peserta berikut sudah memiliki penempatan ujian: {$numbers}.",
+            ]);
+        }
+    }
+
+    private function assertParticipantsAreExamReady(Collection $registrations): void
+    {
+        $notReady = $registrations
+            ->filter(fn (Registration $registration): bool => $registration->status !== 'exam_ready')
+            ->pluck('registration_number')
+            ->implode(', ');
+
+        if ($notReady !== '') {
+            throw ValidationException::withMessages([
+                'registration_ids' => "Peserta berikut belum siap ujian: {$notReady}.",
             ]);
         }
     }

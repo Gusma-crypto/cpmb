@@ -48,10 +48,11 @@ class DashboardController extends Controller
     {
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
-                'total_students'      => User::role('student')->count(),
+                'total_students'      => User::where('role', 'student')->count(),
                 'total_registrations' => Registration::count(),
                 'pending'             => Registration::whereIn('status', ['submitted', 'under_review'])->count(),
                 'exam_ready'          => Registration::where('status', 'exam_ready')->count(),
+                'accepted'            => Registration::where('status', 'accepted')->count(),
                 'cbt_attempts'         => CbtAttempt::count(),
                 'cbt_passed'           => CbtResult::where('is_passed', true)->count(),
                 'cbt_average_score'    => round((float) CbtResult::avg('final_score'), 2),
@@ -68,10 +69,11 @@ class DashboardController extends Controller
     {
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
-                'total_students'      => User::role('student')->count(),
+                'total_students'      => User::where('role', 'student')->count(),
                 'total_registrations' => Registration::count(),
                 'pending'             => Registration::whereIn('status', ['submitted', 'under_review'])->count(),
                 'exam_ready'          => Registration::where('status', 'exam_ready')->count(),
+                'accepted'            => Registration::where('status', 'accepted')->count(),
             ],
             'recentRegistrations' => Registration::with('user')
                 ->latest()

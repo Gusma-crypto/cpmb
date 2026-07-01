@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -69,6 +70,52 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $academicYearId = DB::table('academic_years')
+            ->where('label', '2026/2027')
+            ->value('id');
+
+        DB::table('registration_waves')->updateOrInsert(
+            [
+                'academic_year_id' => $academicYearId,
+                'wave_number' => 1,
+            ],
+            [
+                'label' => 'Gelombang 1',
+                'open_at' => '2026-06-15 00:00:00',
+                'close_at' => '2026-07-17 23:59:59',
+                'is_active' => true,
+                'description' => 'Gelombang pendaftaran pertama tahun akademik 2026/2027.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        $registrationWaveId = DB::table('registration_waves')
+            ->where('academic_year_id', $academicYearId)
+            ->where('wave_number', 1)
+            ->value('id');
+
+        DB::table('programs')
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->get(['id'])
+            ->each(function ($program) use ($registrationWaveId): void {
+                DB::table('gelombang_program')->updateOrInsert(
+                    [
+                        'registration_wave_id' => $registrationWaveId,
+                        'program_id' => $program->id,
+                    ],
+                    [
+                        'status' => 'aktif',
+                        'is_open' => true,
+                        'tanggal_mulai' => '2026-06-15 00:00:00',
+                        'tanggal_selesai' => '2026-07-17 23:59:59',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            });
+
         DB::table('exam_time_slots')->updateOrInsert(
             ['name' => 'Sesi 1'],
             [
@@ -113,25 +160,40 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $student = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'role' => 'student',
-        ]);
+        $student = User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'phone' => '081234567890',
+                'role' => 'student',
+                'is_active' => true,
+                'password' => Hash::make('password'),
+            ]
+        );
         $student->assignRole('student');
 
-        $admin = User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'role' => 'admin',
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin',
+                'phone' => '081234567891',
+                'role' => 'admin',
+                'is_active' => true,
+                'password' => Hash::make('password'),
+            ]
+        );
         $admin->assignRole('admin');
 
-        $staff = User::factory()->create([
-            'name' => 'Staff',
-            'email' => 'staff@example.com',
-            'role' => 'staff',
-        ]);
+        $staff = User::updateOrCreate(
+            ['email' => 'staff@example.com'],
+            [
+                'name' => 'Staff',
+                'phone' => '081234567892',
+                'role' => 'staff',
+                'is_active' => true,
+                'password' => Hash::make('password'),
+            ]
+        );
         $staff->assignRole('staff');
     }
 }

@@ -15,6 +15,7 @@ const statusLabel = {
     verified: 'Terverifikasi',
     rejected: 'Ditolak',
     exam_ready: 'Siap Ujian',
+    accepted: 'Diterima',
 };
 
 const statusClass = {
@@ -25,6 +26,7 @@ const statusClass = {
     verified: 'badge-blue',
     rejected: 'badge-red',
     exam_ready: 'badge-green',
+    accepted: 'badge-green',
 };
 
 const formatDate = (dateStr) => {
@@ -96,6 +98,18 @@ const formatDate = (dateStr) => {
                     <div class="stat-body">
                         <p class="stat-value">{{ stats.exam_ready }}</p>
                         <p class="stat-label">Siap Ujian</p>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon green">
+                        <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+                            <path d="m7 11 3 3 7-7M5 21h14M12 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <div class="stat-body">
+                        <p class="stat-value">{{ stats.accepted ?? 0 }}</p>
+                        <p class="stat-label">Diterima</p>
                     </div>
                 </article>
 

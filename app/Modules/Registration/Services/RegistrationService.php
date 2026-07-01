@@ -16,7 +16,7 @@ class RegistrationService
 {
     public const REQUIRED_DOCUMENTS = ['ijazah', 'ktp', 'photo'];
 
-    public const REGISTRATION_STATUSES = ['draft', 'submitted', 'under_review', 'revision_required', 'verified', 'rejected', 'exam_ready'];
+    public const REGISTRATION_STATUSES = ['draft', 'submitted', 'under_review', 'revision_required', 'verified', 'rejected', 'exam_ready', 'accepted'];
 
     public function paginateFor(User $user, array $filters = []): LengthAwarePaginator
     {
@@ -154,7 +154,7 @@ class RegistrationService
             ]);
         }
 
-        $this->assertRequiredDocumentsApproved($registration);
+        $this->approvePendingRequiredDocuments($registration, $user);
 
         $registration->update([
             'status'      => 'exam_ready',
@@ -294,6 +294,46 @@ class RegistrationService
                 'documents' => 'Dokumen wajib belum disetujui: ' . implode(', ', $notApproved) . '.',
             ]);
         }
+    }
+
+    private function approvePendingRequiredDocuments(Registration $registration, User $reviewer): void
+    {
+        $documents = $registration->documents()
+            ->whereIn('type', self::REQUIRED_DOCUMENTS)
+            ->get()
+            ->keyBy('type');
+
+        $missing = collect(self::REQUIRED_DOCUMENTS)
+            ->reject(fn (string $type): bool => $documents->has($type))
+            ->values()
+            ->all();
+
+        if ($missing !== []) {
+            throw ValidationException::withMessages([
+                'documents' => 'Dokumen wajib belum lengkap: ' . implode(', ', $missing) . '.',
+            ]);
+        }
+
+        $rejected = collect(self::REQUIRED_DOCUMENTS)
+            ->filter(fn (string $type): bool => $documents->get($type)?->status === 'rejected')
+            ->values()
+            ->all();
+
+        if ($rejected !== []) {
+            throw ValidationException::withMessages([
+                'documents' => 'Dokumen wajib masih ditolak: ' . implode(', ', $rejected) . '. Minta revisi terlebih dahulu.',
+            ]);
+        }
+
+        $registration->documents()
+            ->whereIn('type', self::REQUIRED_DOCUMENTS)
+            ->where('status', 'pending')
+            ->update([
+                'status' => 'approved',
+                'notes' => null,
+                'reviewed_by' => $reviewer->id,
+                'reviewed_at' => now(),
+            ]);
     }
 
 }

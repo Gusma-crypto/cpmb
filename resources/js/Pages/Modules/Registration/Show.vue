@@ -83,6 +83,13 @@ const adminStatusInfo = computed(() => {
             className: 'border-blue-200 bg-blue-50 text-blue-800',
             buttonClass: 'bg-blue-600 text-white',
         },
+        accepted: {
+            label: 'Diterima',
+            badge: 'Accepted',
+            description: 'Selamat, Anda dinyatakan diterima berdasarkan hasil seleksi.',
+            className: 'border-green-200 bg-green-50 text-green-800',
+            buttonClass: 'bg-green-600 text-white',
+        },
     };
 
     return statuses[props.registration.status] || null;
@@ -162,6 +169,7 @@ function statusLabel(value) {
         verified: 'Verified',
         rejected: 'Rejected',
         exam_ready: 'Exam Ready',
+        accepted: 'Accepted',
     }[value] || value || '-');
 }
 

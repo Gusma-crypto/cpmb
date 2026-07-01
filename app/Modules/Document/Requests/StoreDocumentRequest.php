@@ -28,7 +28,6 @@ class StoreDocumentRequest extends FormRequest
             'file' => [
                 'required',
                 'file',
-                'mimetypes:application/pdf,image/jpeg,image/jpg',
                 'extensions:pdf,jpg,jpeg',
                 'max:2048',
             ],
@@ -41,7 +40,6 @@ class StoreDocumentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'file.mimetypes' => 'File harus berupa PDF atau JPG.',
             'file.extensions' => 'Ekstensi file harus .pdf, .jpg, atau .jpeg.',
             'file.max' => 'Ukuran file maksimal 2 MB.',
         ];

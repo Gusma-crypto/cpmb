@@ -31,7 +31,7 @@ const uploadedDocumentTypes = computed(() => props.existingRegistration?.documen
 const missingDocuments = computed(() => props.requiredDocs.filter((type) => !uploadedDocumentTypes.value.includes(type)));
 const hasRequiredDocuments = computed(() => props.requiredDocs.length > 0 && missingDocuments.value.length === 0);
 const hasBiodata = computed(() => Boolean(props.existingRegistration?.biodata));
-const hasSubmitted = computed(() => ['submitted', 'under_review', 'revision_required', 'verified', 'exam_ready'].includes(props.existingRegistration?.status));
+const hasSubmitted = computed(() => ['submitted', 'under_review', 'revision_required', 'verified', 'exam_ready', 'accepted'].includes(props.existingRegistration?.status));
 const isRevisionRequired = computed(() => props.existingRegistration?.status === 'revision_required');
 const isVerified = computed(() => ['verified', 'exam_ready'].includes(props.existingRegistration?.status));
 const isExamReady = computed(() => props.existingRegistration?.status === 'exam_ready');
@@ -87,6 +87,7 @@ const badgeClass = (value, type = 'status') => {
         revision_required: 'bg-amber-100 text-amber-700',
         verified: 'bg-emerald-100 text-emerald-700',
         exam_ready: 'bg-green-100 text-green-700',
+        accepted: 'bg-green-100 text-green-700',
         rejected: 'bg-red-100 text-red-700',
         paid: 'bg-green-100 text-green-700',
         pending: 'bg-yellow-100 text-yellow-700',
@@ -104,6 +105,7 @@ const statusLabel = (value) => ({
     verified: 'Verified',
     rejected: 'Rejected',
     exam_ready: 'Exam Ready',
+    accepted: 'Accepted',
 }[value] || value);
 
 const flowStepClass = (step) => {

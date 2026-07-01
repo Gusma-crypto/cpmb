@@ -42,6 +42,7 @@ class CbtResultService
     public function publish(CbtResult $result): CbtResult
     {
         $result->update(['published_at' => $result->published_at ?: now()]);
+        $this->applyAdmissionDecision($result->refresh());
 
         return $result->refresh();
     }
@@ -50,14 +51,37 @@ class CbtResultService
     {
         $result->update(['published_at' => null]);
 
+        if (in_array($result->registration?->status, ['accepted', 'rejected'], true)) {
+            $result->registration->update(['status' => 'exam_ready']);
+        }
+
         return $result->refresh();
     }
 
     public function publishMany(array $ids): int
     {
-        return CbtResult::query()
+        $results = CbtResult::query()
             ->whereIn('id', $ids)
             ->whereNull('published_at')
-            ->update(['published_at' => now()]);
+            ->get();
+
+        foreach ($results as $result) {
+            $this->publish($result);
+        }
+
+        return $results->count();
+    }
+
+    private function applyAdmissionDecision(CbtResult $result): void
+    {
+        $result->loadMissing('registration');
+
+        if (! $result->registration) {
+            return;
+        }
+
+        $result->registration->update([
+            'status' => $result->is_passed ? 'accepted' : 'rejected',
+        ]);
     }
 }

@@ -66,6 +66,7 @@ const statusLabel = (value) => ({
     verified: 'Verified',
     rejected: 'Rejected',
     exam_ready: 'Exam Ready',
+    accepted: 'Accepted',
 }[value] || value);
 
 const badgeClass = (value) => {
@@ -77,6 +78,7 @@ const badgeClass = (value) => {
         verified: 'bg-emerald-100 text-emerald-700',
         rejected: 'bg-red-100 text-red-700',
         exam_ready: 'bg-green-100 text-green-700',
+        accepted: 'bg-green-100 text-green-700',
     };
 
     return map[value || 'draft'] || map.draft;

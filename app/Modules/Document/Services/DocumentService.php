@@ -61,7 +61,7 @@ class DocumentService
             'type' => $data['type'],
             'file_path' => $path,
             'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType() ?: $file->getClientMimeType(),
+            'mime_type' => $file->getClientMimeType() ?: $this->mimeTypeFromExtension($file),
             'size_kb' => (int) ceil($file->getSize() / 1024),
             'status' => 'pending',
         ]);
@@ -180,5 +180,14 @@ class DocumentService
                 'document' => 'Gelombang pendaftaran belum dibuka. Hubungi panitia PMB untuk informasi lebih lanjut.',
             ]);
         }
+    }
+
+    private function mimeTypeFromExtension(UploadedFile $file): string
+    {
+        return match (strtolower($file->getClientOriginalExtension())) {
+            'pdf' => 'application/pdf',
+            'jpg', 'jpeg' => 'image/jpeg',
+            default => 'application/octet-stream',
+        };
     }
 }

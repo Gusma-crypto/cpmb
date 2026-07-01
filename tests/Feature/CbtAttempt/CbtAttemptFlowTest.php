@@ -5,7 +5,9 @@ namespace Tests\Feature\CbtAttempt;
 use App\Models\User;
 use App\Modules\AcademicYear\Models\AcademicYear;
 use App\Modules\CbtAttempt\Models\CbtAttempt;
+use App\Modules\CbtAttempt\Models\CbtResult;
 use App\Modules\CbtExam\Models\CbtExam;
+use App\Modules\CbtResult\Services\CbtResultService;
 use App\Modules\ExamRoom\Models\ExamRoom;
 use App\Modules\ExamRoom\Models\ExamRoomAssignment;
 use App\Modules\ExamRoom\Models\ParticipantExamAssignment;
@@ -87,6 +89,13 @@ class CbtAttemptFlowTest extends TestCase
             'cbt_attempt_id' => $attempt->id,
             'correct_answers' => 1,
             'is_passed' => true,
+        ]);
+
+        app(CbtResultService::class)->publish(CbtResult::firstOrFail());
+
+        $this->assertDatabaseHas('registrations', [
+            'id' => $registration->id,
+            'status' => 'accepted',
         ]);
     }
 

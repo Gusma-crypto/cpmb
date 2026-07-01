@@ -18,6 +18,7 @@ class RoleAccessTest extends TestCase
         $user = User::factory()->create([
             'role' => 'student',
         ]);
+        $user->syncLegacyRoleToSpatie();
 
         // 2. Bertindak sebagai user ini, coba akses halaman admin
         $response = $this->actingAs($user)->get('/admin/dashboard');
@@ -31,6 +32,7 @@ class RoleAccessTest extends TestCase
         $user = User::factory()->create([
             'role' => 'admin',
         ]);
+        $user->syncLegacyRoleToSpatie();
 
         $response = $this->actingAs($user)->get('/admin/dashboard');
 
