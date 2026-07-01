@@ -1,14 +1,13 @@
-
 # CPMB Laravel App
 
-Aplikasi CPMB berbasis Laravel 12, Inertia, Vue, PostgreSQL, Redis, dan queue worker. Repository ini sudah dilengkapi konfigurasi Docker untuk deploy ke VPS.
+Aplikasi CPMB berbasis Laravel 12, Inertia, Vue, MySQL, Redis, dan queue worker. Repository ini sudah dilengkapi konfigurasi Docker untuk deploy ke VPS.
 
 ## Stack
 
 - PHP 8.3 FPM
 - Laravel 12
 - Nginx 1.27
-- PostgreSQL 16
+- MySQL 8.4
 - Redis 7
 - Node.js 22 untuk build asset Vite
 - Docker Compose
@@ -40,6 +39,7 @@ APP_DEBUG=false
 APP_URL=https://domain-anda.com
 APP_KEY=
 DB_PASSWORD=ganti-password-kuat
+DB_ROOT_PASSWORD=ganti-root-password-kuat
 HTTP_PORT=8080
 RUN_MIGRATIONS=true
 ```
@@ -99,16 +99,15 @@ Gunakan tag versi baru setiap deploy agar rollback lebih mudah.
 ## Backup Database
 
 ```bash
-docker compose --env-file .env.docker exec db pg_dump -U cpmb -d cpmb -x -O > db_backup.sql
+docker compose --env-file .env.docker exec db sh -c 'mysqldump -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' > db_backup.sql
 ```
 
 ## Restore Database
 
 ```bash
-docker compose --env-file .env.docker exec -T db psql -U cpmb cpmb < db_backup.sql
+docker compose --env-file .env.docker exec -T db sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < db_backup.sql
 ```
 
 ## Dokumentasi Instalasi
 
 Panduan instalasi VPS yang lebih lengkap tersedia di [`instalasi.md`](instalasi.md).
-

@@ -121,12 +121,13 @@ APP_KEY=
 APP_DEBUG=false
 APP_URL=https://domain-anda.com
 
-DB_CONNECTION=pgsql
+DB_CONNECTION=mysql
 DB_HOST=db
-DB_PORT=5432
+DB_PORT=3306
 DB_DATABASE=cpmb
 DB_USERNAME=cpmb
 DB_PASSWORD=ganti-password-kuat
+DB_ROOT_PASSWORD=ganti-root-password-kuat
 
 REDIS_HOST=redis
 QUEUE_CONNECTION=database
@@ -151,7 +152,7 @@ Saat deploy, Docker Compose akan menjalankan service berikut:
 
 - `app`: Laravel PHP-FPM.
 - `web`: Nginx, expose ke `HTTP_PORT`.
-- `db`: PostgreSQL 16.
+- `db`: MySQL 8.4.
 - `redis`: Redis 7.
 - `queue`: Laravel queue worker.
 
@@ -237,7 +238,7 @@ REGISTRY=ghcr.io/gusma-crypto ./deploy.sh v1.0.1
 ## 12. Backup Database
 
 ```bash
-docker compose --env-file .env.docker exec db pg_dump -U cpmb -d cpmb -x -O > db_backup.sql
+docker compose --env-file .env.docker exec db sh -c 'mysqldump -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' > db_backup.sql
 ```
 
 Jika `DB_USERNAME` atau `DB_DATABASE` diganti, sesuaikan perintah backup.
@@ -245,7 +246,7 @@ Jika `DB_USERNAME` atau `DB_DATABASE` diganti, sesuaikan perintah backup.
 ## 13. Restore Database
 
 ```bash
-docker compose --env-file .env.docker exec -T db psql -U cpmb cpmb < db_backup.sql
+docker compose --env-file .env.docker exec -T db sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < db_backup.sql
 ```
 
 ## 14. Catatan Reverse Proxy
