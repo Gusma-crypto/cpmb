@@ -31,6 +31,8 @@ services:
     command: php artisan queue:work --sleep=3 --tries=3 --timeout=90
     env_file:
       - .env.docker
+    environment:
+      RUN_MIGRATIONS: "false"
     depends_on:
       app:
         condition: service_started
@@ -46,6 +48,7 @@ services:
       - ./storage/framework/cache:/var/www/storage/framework/cache
       - ./storage/framework/views:/var/www/storage/framework/views
       - ./bootstrap/cache:/var/www/bootstrap/cache
+      - app-public:/var/www/public-shared
     networks:
       - app-network
 

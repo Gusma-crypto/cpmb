@@ -32,6 +32,8 @@ FROM php:8.3-fpm-bookworm AS production
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        $PHPIZE_DEPS \
+        ca-certificates \
         git \
         libfreetype6-dev \
         libicu-dev \
@@ -51,6 +53,7 @@ RUN apt-get update \
         pdo_mysql \
         pdo_pgsql \
         zip \
+    && pecl channel-update pecl.php.net \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apt-get clean \

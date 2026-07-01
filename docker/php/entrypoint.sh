@@ -15,12 +15,9 @@ chown -R www-data:www-data \
     /var/www/bootstrap/cache \
     /var/www/public-shared
 
-if [ ! -f /var/www/public-shared/.copied ]; then
-    echo "Copying public assets to shared Nginx volume..."
-    rm -rf /var/www/public-shared/*
-    cp -a /var/www/public/. /var/www/public-shared/
-    touch /var/www/public-shared/.copied
-fi
+echo "Copying public assets to shared Nginx volume..."
+find /var/www/public-shared -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+cp -a /var/www/public/. /var/www/public-shared/
 
 if [ -f /var/www/.env ]; then
     php artisan storage:link >/dev/null 2>&1 || true
